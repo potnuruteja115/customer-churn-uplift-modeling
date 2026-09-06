@@ -4,5 +4,6 @@ pydantic
 scikit-learn
 joblib
 numpy
+pandas
 pytest
 httpx
