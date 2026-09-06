@@ -59,3 +59,16 @@ Expected outcome with treatment
 Expected outcome without treatment
              =
 Predicted uplift
+
+---
+
+## FastAPI Model Serving
+
+The project provides a FastAPI service for serving the trained T-Learner model.
+
+The API loads the trained control and treatment models from the `models/` directory and calculates the predicted uplift for a given set of features.
+
+### Start the API
+
+```bash
+uvicorn api.app:app --reload
