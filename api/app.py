@@ -1,62 +1,86 @@
+from pathlib import Path
+import sys
 
+import joblib
 import numpy as np
 import pandas as pd
-import mlflow
-import mlflow.pyfunc
-
-from pathlib import Path
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 
-PROJECT_ROOT = Path(
-    r"C:\Users\ugand\customer-churn-uplift-modeling"
+# ---------------------------------------------------------
+# Project paths
+# ---------------------------------------------------------
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+SRC_DIR = PROJECT_ROOT / "src"
+MODELS_DIR = PROJECT_ROOT / "models"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+
+# ---------------------------------------------------------
+# Production T-Learner
+# ---------------------------------------------------------
+
+from uplift.t_learner import TLearner
+
+
+# ---------------------------------------------------------
+# Model configuration
+# ---------------------------------------------------------
+
+CONTROL_MODEL_PATH = (
+    MODELS_DIR / "t_learner_control_model.joblib"
 )
 
-MLFLOW_DIR = (
-    PROJECT_ROOT / "mlruns"
+TREATMENT_MODEL_PATH = (
+    MODELS_DIR / "t_learner_treatment_model.joblib"
 )
 
-mlflow_tracking_path = (
-    MLFLOW_DIR / "mlflow.db"
+MODEL_NAME = "t_learner"
+MODEL_VERSION = "1.0"
+
+
+# ---------------------------------------------------------
+# Load trained models
+# ---------------------------------------------------------
+
+control_model = joblib.load(
+    CONTROL_MODEL_PATH
 )
 
-mlflow.set_tracking_uri(
-    f"sqlite:///{mlflow_tracking_path}"
-)
-
-
-REGISTERED_MODEL_NAME = (
-    "customer_uplift_t_learner"
-)
-
-MODEL_ALIAS = "champion"
-
-MODEL_URI = (
-    f"models:/{REGISTERED_MODEL_NAME}@{MODEL_ALIAS}"
+treatment_model = joblib.load(
+    TREATMENT_MODEL_PATH
 )
 
 
-FEATURE_COLUMNS = [
-    f"f{i}"
-    for i in range(12)
-]
-
-
-model = mlflow.pyfunc.load_model(
-    MODEL_URI
+uplift_model = TLearner(
+    control_model=control_model,
+    treatment_model=treatment_model,
+    clone_models=False
 )
 
+
+# ---------------------------------------------------------
+# FastAPI application
+# ---------------------------------------------------------
 
 app = FastAPI(
     title="Customer Uplift Modeling API",
     description=(
-        "API for uplift prediction using "
-        "the MLflow champion T-Learner."
+        "Production API for individual treatment effect "
+        "prediction using a T-Learner."
     ),
-    version="1.0.0"
+    version=MODEL_VERSION,
 )
 
+
+# ---------------------------------------------------------
+# Input schema
+# ---------------------------------------------------------
 
 class UpliftRequest(BaseModel):
 
@@ -74,13 +98,25 @@ class UpliftRequest(BaseModel):
     f11: float
 
 
+# ---------------------------------------------------------
+# Output schema
+# ---------------------------------------------------------
+
 class UpliftResponse(BaseModel):
+
+    model_config = {
+        "protected_namespaces": ()
+    }
 
     predicted_uplift: float
     recommendation: str
     model_name: str
-    model_alias: str
+    model_version: str
 
+
+# ---------------------------------------------------------
+# Treatment policy
+# ---------------------------------------------------------
 
 def get_treatment_recommendation(
     uplift: float
@@ -92,15 +128,23 @@ def get_treatment_recommendation(
     return "DO_NOT_TREAT"
 
 
+# ---------------------------------------------------------
+# Health endpoint
+# ---------------------------------------------------------
+
 @app.get("/health")
 def health_check():
 
     return {
         "status": "healthy",
-        "model": REGISTERED_MODEL_NAME,
-        "alias": MODEL_ALIAS
+        "model": MODEL_NAME,
+        "version": MODEL_VERSION,
     }
 
+
+# ---------------------------------------------------------
+# Prediction endpoint
+# ---------------------------------------------------------
 
 @app.post(
     "/predict",
@@ -113,22 +157,29 @@ def predict_uplift(
     input_data = pd.DataFrame(
         [
             {
-                feature: getattr(
-                    request,
-                    feature
-                )
-                for feature in FEATURE_COLUMNS
+                "f0": request.f0,
+                "f1": request.f1,
+                "f2": request.f2,
+                "f3": request.f3,
+                "f4": request.f4,
+                "f5": request.f5,
+                "f6": request.f6,
+                "f7": request.f7,
+                "f8": request.f8,
+                "f9": request.f9,
+                "f10": request.f10,
+                "f11": request.f11,
             }
         ]
     )
 
-    prediction = model.predict(
+    uplift_prediction = uplift_model.predict_uplift(
         input_data
     )
 
     uplift = float(
         np.asarray(
-            prediction
+            uplift_prediction
         ).reshape(-1)[0]
     )
 
@@ -141,6 +192,6 @@ def predict_uplift(
     return UpliftResponse(
         predicted_uplift=uplift,
         recommendation=recommendation,
-        model_name=REGISTERED_MODEL_NAME,
-        model_alias=MODEL_ALIAS
+        model_name=MODEL_NAME,
+        model_version=MODEL_VERSION,
     )
