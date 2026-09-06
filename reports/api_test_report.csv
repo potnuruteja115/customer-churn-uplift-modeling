@@ -1,0 +1,8 @@
+test,status
+Health endpoint,PASS
+Valid prediction request,PASS
+Prediction response schema,PASS
+Treatment recommendation,PASS
+Missing feature validation,PASS
+Invalid data type validation,PASS
+Multiple requests,PASS
