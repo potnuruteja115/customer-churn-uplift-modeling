@@ -1,1 +1,10 @@
-
+services:
+  uplift-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: customer-uplift-api:latest
+    container_name: customer-uplift-api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
