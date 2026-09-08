@@ -38,7 +38,7 @@
 
 **Customer Churn Uplift Modeling** is an end-to-end machine learning project focused on estimating the **incremental impact of a treatment or intervention**.
 
-Traditional machine learning predicts which customers are likely to convert or churn.
+Traditional machine learning predicts which observations are likely to convert.
 
 Uplift modeling goes one step further:
 
@@ -131,7 +131,7 @@ Who is likely to convert BECAUSE of the treatment?
 This distinction is important because some customers may convert even without receiving an intervention.
 
 ```text
-                    Customer Population
+                Observation Population
                            │
           ┌────────────────┼────────────────┐
           │                │                │
@@ -189,7 +189,7 @@ P(Y = 1 | X, T = 0)
 Where:
 
 ```text
-X = Customer Features
+X = Input Features
 T = Treatment Assignment
 Y = Outcome
 ```
@@ -816,6 +816,14 @@ This allows models to be versioned and tracked throughout their lifecycle.
 The trained production T-Learner is exposed through a REST API using FastAPI.
 
 The API loads the trained model artifacts:
+### API Input
+
+The prediction API accepts the following 12 input features:
+
+f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11
+
+Treatment is not provided in the prediction request because the
+T-Learner internally estimates both treatment and control outcomes.
 
 ```text
 models/
@@ -1185,7 +1193,7 @@ customer-churn-uplift-modeling/
 # 📊 Treatment Effect Decision Flow
 
 ```text
-                 Customer
+               Observation
                     │
                     ▼
               Feature Vector X
