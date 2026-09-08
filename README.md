@@ -991,7 +991,7 @@ customer-churn-uplift-modeling/
 │   ├── t_learner_control_model.joblib
 │   ├── t_learner_treatment_model.joblib
 │   ├── t_learner_model_metadata.json
-│   └── t_learner_registry_package.joblib
+│  
 │
 ├── notebooks/
 │   ├── 01_data_understanding.ipynb
@@ -1024,7 +1024,6 @@ customer-churn-uplift-modeling/
 ├── .dockerignore
 ├── .gitignore
 ├── CHANGELOG.md
-├── CONTRIBUTING.md
 ├── docker-compose.yml
 ├── Dockerfile
 ├── LICENSE
@@ -1383,13 +1382,13 @@ pytest -v
 Build the image:
 
 ```bash
-docker build -t customer-churn-uplift .
+docker build -t customer-uplift-api:latest . 
 ```
 
 Run the container:
 
 ```bash
-docker run -p 8000:8000 customer-churn-uplift
+docker run -p 8000:8000 customer-uplift-api:latest
 ```
 
 ---
@@ -1397,7 +1396,7 @@ docker run -p 8000:8000 customer-churn-uplift
 # 🐳 Run with Docker Compose
 
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
 Stop the services:
@@ -1649,7 +1648,7 @@ The architecture can be extended with:
 
 # 🏁 Conclusion
 
-This project demonstrates the complete journey from exploratory data science to a production-oriented **customer churn uplift modeling system**.
+This project demonstrates the complete journey from exploratory data science to a production-oriented **uplift modeling system**.
 
 The final workflow combines:
 
