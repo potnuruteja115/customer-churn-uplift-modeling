@@ -886,22 +886,19 @@ customer-churn-uplift-modeling/
 │   └── workflows/
 │       └── tests.yml
 │
-├── Assets/
-│   └── Banner.png
-│
 ├── api/
 │   └── app.py
 │
 ├── data/
 │   ├── raw/
 │   ├── interim/
-│   ├── processed/
-│   └── external/
+│   └── processed/
 │
 ├── models/
 │   ├── t_learner_control_model.joblib
 │   ├── t_learner_treatment_model.joblib
-│   └── t_learner_model_metadata.json
+│   ├── t_learner_model_metadata.json
+│  
 │
 ├── notebooks/
 │   ├── 01_data_understanding.ipynb
@@ -920,7 +917,6 @@ customer-churn-uplift-modeling/
 │   └── 14_api_testing.ipynb
 │
 ├── reports/
-│   ├── api_test_report.csv
 │   └── production_model_metrics.csv
 │
 ├── src/
@@ -934,9 +930,12 @@ customer-churn-uplift-modeling/
 │
 ├── .dockerignore
 ├── .gitignore
+├── CHANGELOG.md
 ├── docker-compose.yml
 ├── Dockerfile
 ├── LICENSE
+├── Makefile
+├── pyproject.toml
 ├── README.md
 └── requirements.txt
 
@@ -1320,89 +1319,6 @@ docker compose up -d
 Stop the services:
 
 docker compose down
-
-☁️ Production Deployment
-
-The production FastAPI application is deployed using Render with Docker.
-
-Deployment Architecture
-
-GitHub Repository
-       │
-       ▼
-    Render
-       │
-       ▼
-    Docker
-       │
-       ▼
-    FastAPI
-       │
-       ▼
- T-Learner Model
-       │
-       ▼
- Public REST API
-
-Production Deployment
-
-Platform: Render
-
-Runtime: Docker
-
-Branch: main
-
-Service: customer-churn-uplift-modeling
-
-API: FastAPI
-
-Model: T-Learner
-
-Status: Live
-
-Public API
-
-Base URL:
-
-https://customer-churn-uplift-modeling.onrender.com
-
-Health Check
-
-GET /health
-
-Returns the current API and model status.
-
-Interactive API Documentation
-
-GET /docs
-
-Swagger UI is available at:
-
-https://customer-churn-uplift-modeling.onrender.com/docs
-
-Prediction Endpoint
-
-POST /predict
-
-The endpoint accepts the 12 input features (f0–f11) and returns:
-
-Predicted uplift
-
-Treatment recommendation
-
-Model name
-
-Model version
-
-Deployment Verification
-
-The deployed service was successfully validated with:
-
-/health  →  200 OK
-/predict →  200 OK
-/docs    →  Swagger UI
-
-The application is deployed from the main branch using the project's Docker configuration.
 
 🔌 API Architecture
 
