@@ -278,7 +278,7 @@ exposure
 ### Feature Groups
 
 ```text
-Customer Features
+Input Features
        │
        ├── f0
        ├── f1
@@ -690,21 +690,21 @@ Deploy Intervention
 ### Example
 
 ```text
-Customer A → +0.42
-Customer B → +0.31
-Customer C → +0.18
-Customer D → +0.04
-Customer E → -0.12
+Observation A → +0.42
+Observation B → +0.31
+Observation C → +0.18
+Observation D → +0.04
+Observation E → -0.12
 ```
 
 The targeting policy prioritizes:
 
 ```text
-Customer A
+Observation A
       ↓
-Customer B
+Observation B
       ↓
-Customer C
+Observation C
 ```
 
 while lower or negative uplift observations receive lower priority.
