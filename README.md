@@ -1627,6 +1627,46 @@ GitHub Actions
 
 ---
 
+# 🚀 Deployment
+
+The **Customer Churn Uplift Modeling** project is designed to support production deployment using **Docker, Docker Compose, FastAPI, and cloud-ready architecture**.
+
+---
+
+## 🌐 Deployment Architecture
+
+```text
+                         🌍 USER / CLIENT
+                                │
+                                ▼
+                     ┌────────────────────┐
+                     │   FastAPI Server   │
+                     │      :8000         │
+                     └─────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Request Validation│
+                    │      Pydantic       │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │ Production T-Learner│
+                    │      Models         │
+                    └─────────┬───────────┘
+                              │
+                  ┌───────────┴───────────┐
+                  ▼                       ▼
+          Control Prediction      Treatment Prediction
+                  │                       │
+                  └───────────┬───────────┘
+                              ▼
+                       Uplift Score
+                              │
+                              ▼
+                     JSON API Response
+
 # 🔮 Future Improvements
 
 The architecture can be extended with:
